@@ -152,7 +152,7 @@ if __name__ == "__main__":
     print(f"千问响应：\n{response.content}\n")
 
     # 2. 测试DeepSeek模型
-    print("【测试 DeepSeek 模型...】")
+    print("【测试 DeepSeek 模型....】")
     deepseek_llm = langchain_deepseek_llm("deepseek-chat", temperature=0)
     response = deepseek_llm.invoke(user_query)
     # 美化输出响应
