@@ -299,13 +299,11 @@ class RAGService:
                     yield chunk.content
                     self.current_stream_answer += chunk.content
 
-            # 完整答案生成后，更新对话记忆：将本次问答（问题+完整答案）存入记忆，供下一轮对话复用
-            self.memory.save_context(
-                inputs={"input": question},
-                outputs={"answer": self.current_stream_answer}
-            )
+            # 完整答案生成后，更新对话记忆：将本次问答存入记忆，供下一轮对话复用
+            self._chat_history_manager.add_user_message(question)
+            self._chat_history_manager.add_ai_message(self.current_stream_answer)
 
-            logger.info(f"self.memory.save_context:{self.memory.model_dump_json()}")
+            logger.info(f"chat_history saved, messages count: {len(self._chat_history_manager.messages)}")
 
         except Exception as e:
             logger.error(f"错误：答案生成失败：{str(e)}")
@@ -318,7 +316,7 @@ class RAGService:
                 self.vectordb.reset_collection()
 
             # 清除记忆
-            self.memory.clear()
+            self._chat_history_manager.clear()
             return True
         except Exception as e:
             print(f"错误：数据库清空失败：{str(e)}")
